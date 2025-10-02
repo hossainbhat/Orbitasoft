@@ -79,6 +79,6 @@ class CountryTableSeeder extends Seeder
             ['iso_code' => 'VN', 'name' => 'Vietnam'],
             ['iso_code' => 'YE', 'name' => 'Yemen'],
         ];
-         DB::table('countries')->insert($countries);
+        DB::table('countries')->insert($countries);
     }
 }

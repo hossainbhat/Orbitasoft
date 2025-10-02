@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\CityController;
+use App\Http\Controllers\API\V1\RoleController;
 use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\IndexController;
 use App\Http\Controllers\API\V1\OrderController;
@@ -37,6 +38,9 @@ Route::middleware('auth:api')->group( function () {
     Route::resource('users', UserController::class);
     //product
     Route::resource('products', ProductController::class);
+    //roles
+    Route::resource('roles', RoleController::class);
+    Route::get('all-permissions', [RoleController::class, 'all_permission'])->name('all_permission');
     //order
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
