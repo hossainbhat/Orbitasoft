@@ -11,6 +11,7 @@ use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\RegisterController;
 use App\Http\Controllers\API\V1\AttributeController;
 use App\Http\Controllers\API\V1\CategegoryController;
+use App\Http\Controllers\API\V1\DeliveryInfoController;
 
 
 //register
@@ -21,9 +22,11 @@ Route::post('login', [RegisterController::class, 'login']);
 Route::get('category-list', [IndexController::class, 'category_list'])->name('category_list');
 Route::get('product-list', [IndexController::class, 'product_list'])->name('product_list');
 Route::get('products/{slug}', [IndexController::class, 'product_details'])->name('product_details');
-
+Route::resource('delivery-info', DeliveryInfoController::class);
      
 Route::middleware('auth:api')->group( function () {
+    //category
+    Route::resource('categories', CategegoryController::class);
     //country
     Route::resource('countries', CountryController::class);
     //city
@@ -32,8 +35,6 @@ Route::middleware('auth:api')->group( function () {
     Route::resource('attributes', AttributeController::class);
     //user
     Route::resource('users', UserController::class);
-    //category
-    Route::resource('categories', CategegoryController::class);
     //product
     Route::resource('products', ProductController::class);
     //order

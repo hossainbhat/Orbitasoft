@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
-use App\Models\City;
+use App\Models\DeliveryInfo;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class CityController extends Controller
+class DeliveryInfoController extends Controller
 {
-    private $modelName = City::class;
+    private $modelName = DeliveryInfo::class;
     /**
      * Display a listing of the resource.
      */
@@ -18,7 +18,7 @@ class CityController extends Controller
         if ($request->wantsJson()) {
             $query = $this->modelName::query();
             if ($request->search) {
-                $query->where('name', 'like', "%$request->search%");
+                $query->where('full_name', 'like', "%$request->search%");
             }
             // default order
             $query->orderBy('id', 'DESC');
@@ -42,8 +42,15 @@ class CityController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'bail|required|string|unique:cities,name',
-            'country_id' => 'bail|required|integer',
+            'full_name' => 'required',
+            'phone' => 'required',
+            'email' => 'required',
+            'address_line1' => 'required',
+            'address_line2' => 'bail|nullable',
+            'country_id' => 'required',
+            'city_id' => 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -51,8 +58,16 @@ class CityController extends Controller
         }
 
         $dataToCreate = [
-            'name' => $request->name,
+            'full_name' => $request->full_name,
+            'user_id' =>  $request->user_id,
             'country_id' => $request->country_id,
+            'city_id' => $request->city_id,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address_line1' => $request->address_line1,
+            'address_line2' => $request->address_line2,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
         ];
 
         if ($data = $this->modelName::create($dataToCreate)) {
@@ -67,10 +82,14 @@ class CityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(City $city)
+    public function show(DeliveryInfo $delivery_info)
     {
         $payload = [
-            'data' => $city
+            'data' => $delivery_info->load([
+                'user',
+                'country',
+                'city'
+            ])
         ];
         return $this->sendSuccess($payload);
     }
@@ -78,11 +97,19 @@ class CityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, City $city)
+    public function update(Request $request, DeliveryInfo $delivery_info)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'bail|required|string|unique:cities,name,' . $city->id,
-            'country_id' => 'bail|required|integer',
+            'full_name' => 'required',
+            'user_id' => 'required',
+            'phone' => 'required',
+            'email' => 'required',
+            'address_line1' => 'required',
+            'address_line2' => 'bail|nullable',
+            'country_id' => 'required',
+            'city_id' => 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -90,13 +117,21 @@ class CityController extends Controller
         }
 
         $dataToUpdate = [
-            'name' => $request->name,
+            'full_name' => $request->full_name,
+            'user_id' => $request->user_id,
             'country_id' => $request->country_id,
+            'city_id' => $request->city_id,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address_line1' => $request->address_line1,
+            'address_line2' => $request->address_line2,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
         ];
 
-        if ($city->update($dataToUpdate)) {
+        if ($delivery_info->update($dataToUpdate)) {
             cache()->flush();
-            return $this->sendUpdateSuccess($city);
+            return $this->sendUpdateSuccess($delivery_info);
         } else {
             return $this->sendError();
         }
@@ -105,10 +140,10 @@ class CityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(City $city)
+    public function destroy(DeliveryInfo $delivery_info)
     {
         try {
-            if ($city->delete()) {
+            if ($delivery_info->delete()) {
                 cache()->flush();
                 return $this->sendDeleteSuccess();
             } else {

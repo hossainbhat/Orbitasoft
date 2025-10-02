@@ -17,4 +17,9 @@ class Attribute extends Model
                     ->withPivot('value')
                     ->withTimestamps();
     }
+
+    public function attributeValue()
+    {
+        return $this->hasMany(AttributeValue::class,'attribute_id','id');
+    }
 }
