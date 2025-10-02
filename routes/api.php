@@ -41,5 +41,6 @@ Route::middleware('auth:api')->group( function () {
     Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     //logout
+    Route::get('/user', [RegisterController::class, 'user']);
     Route::post('logout', [RegisterController::class, 'logout']);
 });
