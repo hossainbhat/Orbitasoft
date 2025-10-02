@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->cascadeOnDelete(); 
             $table->integer('quantity')->default(1);
             $table->decimal('price', 10, 2); 
+            $table->string('size', 50)->nullable();
             $table->timestamps();
             $table->unique(['user_id', 'product_id']);
         });
