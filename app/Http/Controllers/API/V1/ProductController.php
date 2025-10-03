@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     private $modelName = Product::class;
@@ -44,8 +44,8 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'bail|required|string|unique:products,name',
             'description' => 'bail|nullable',
-            'price' => 'bail|required|double',
-            'discount' => 'bail|nullable',
+            'price' => 'bail|required|integer',
+            'discount' => 'bail|nullable|integer',
             // 'cover_image' => 'bail|required',
             'category_id' => 'bail|required|integer',
         ]);
@@ -54,12 +54,22 @@ class ProductController extends Controller
             return $this->sendValidationError($validator->errors());
         }
 
+        $slug = Str::slug($request->name);
+
+        $originalSlug = $slug;
+        $counter = 1;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
         $dataToCreate = [
             'name' => $request->name,
             'category_id' => $request->category_id,
             'description' => $request->description,
             'price' => $request->price,
             'discount' => $request->discount,
+            'slug' => $request->discount,
         ];
 
         if ($data = $this->modelName::create($dataToCreate)) {
@@ -85,11 +95,15 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+     public function update(Request $request, Product $product)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'bail|required|string|unique:cities,name,' . $product->id,
-            'country_id' => 'bail|required|integer',
+         $validator = Validator::make($request->all(), [
+            'name' => 'bail|required|string',
+            'description' => 'bail|nullable',
+            'price' => 'bail|required|integer',
+            'discount' => 'bail|nullable|integer',
+            // 'cover_image' => 'bail|required',
+            'category_id' => 'bail|required|integer',
         ]);
 
         if ($validator->fails()) {

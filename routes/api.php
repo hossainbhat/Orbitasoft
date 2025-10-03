@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\V1\CartController;
 use App\Http\Controllers\API\V1\CityController;
 use App\Http\Controllers\API\V1\RoleController;
 use App\Http\Controllers\API\V1\UserController;
@@ -20,10 +21,14 @@ Route::post('register', [RegisterController::class, 'register']);
 //login
 Route::post('login', [RegisterController::class, 'login']);
 //
-Route::get('category-list', [IndexController::class, 'category_list'])->name('category_list');
-Route::get('product-list', [IndexController::class, 'product_list'])->name('product_list');
-Route::get('products/{slug}', [IndexController::class, 'product_details'])->name('product_details');
+Route::get('category-list', [IndexController::class, 'categoryList'])->name('category_list');
+Route::get('product-list', [IndexController::class, 'productList'])->name('product_list');
+Route::get('product/{slug}', [IndexController::class, 'productDetails'])->name('product_details');
 Route::resource('delivery-info', DeliveryInfoController::class);
+//cart
+Route::post('add-to-cart', [CartController::class, 'addToCart'])->name('add_to_cart');
+Route::post('cart/{userId}', [CartController::class, 'viewCart'])->name('view_cart');
+Route::post('cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('remove_rrom_cart');
      
 Route::middleware('auth:api')->group( function () {
     //category
